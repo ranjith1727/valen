@@ -1,125 +1,117 @@
-// Get canvas
-var canvas = document.getElementById("starfield");
-var context = canvas.getContext("2d");
+<canvas id="starfield"></canvas>
+<button id="valentinesButton" style="display:none;">Next</button>
+<script>
+const canvas = document.getElementById("starfield");
+const context = canvas.getContext("2d");
 
-// Resize canvas
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+let stars = window.innerWidth < 600 ? 200 : 500; // fewer stars for mobile
+let colorrange = [0, 60, 240];
+let starArray = [];
 
-// Starfield setup
-var stars = window.innerWidth < 600 ? 150 : 500; // fewer stars on mobile
-var colorrange = [0, 60, 240];
-var starArray = [];
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 // Initialize stars
-for (var i = 0; i < stars; i++) {
-  starArray.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    radius: Math.random() * 1.2,
-    hue: colorrange[getRandom(0, colorrange.length - 1)],
-    sat: getRandom(50, 100),
-    opacity: Math.random()
-  });
+for (let i = 0; i < stars; i++) {
+  let x = Math.random() * canvas.width;
+  let y = Math.random() * canvas.height;
+  let radius = Math.random() * 1.2;
+  let hue = colorrange[getRandom(0, colorrange.length - 1)];
+  let sat = getRandom(50, 100);
+  let opacity = Math.random();
+  starArray.push({ x, y, radius, hue, sat, opacity });
 }
-
-// Animation variables
-var frameNumber = 0;
-var opacity = 0;
-var secondOpacity = 0;
 
 const button = document.getElementById("valentinesButton");
 button.addEventListener("click", () => {
   window.location.href = "valentinesday.html";
 });
 
-// Draw stars
+// Timing
+let startTime = null;
+
 function drawStars() {
-  for (var i = 0; i < stars; i++) {
-    var star = starArray[i];
+  starArray.forEach(star => {
     context.beginPath();
     context.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
     context.fillStyle = `hsla(${star.hue}, ${star.sat}%, 88%, ${star.opacity})`;
     context.fill();
-  }
+  });
 }
 
-// Update stars
 function updateStars() {
-  for (var i = 0; i < stars; i++) {
-    if (Math.random() > 0.99) {
-      starArray[i].opacity = Math.random();
-    }
-  }
+  starArray.forEach(star => {
+    if (Math.random() > 0.99) star.opacity = Math.random();
+  });
 }
 
-// Draw text with line breaks
-function drawTextWithLineBreaks(lines, x, y, fontSize, lineHeight) {
+function drawTextWithLineBreaks(lines, x, y, fontSize, lineHeight, opacity) {
+  context.fillStyle = `rgba(45,45,255,${opacity})`;
   lines.forEach((line, index) => {
     context.fillText(line, x, y + index * (fontSize + lineHeight));
   });
 }
 
-// Draw animated text
-function drawText() {
-  var fontSize = Math.min(30, window.innerWidth / 24);
-  var lineHeight = 8;
+function draw(timestamp) {
+  if (!startTime) startTime = timestamp;
+  const elapsed = (timestamp - startTime) / 1000; // seconds
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  drawStars();
+  updateStars();
+
+  const fontSize = Math.min(30, window.innerWidth / 24);
+  const lineHeight = 8;
   context.font = fontSize + "px Comic Sans MS";
   context.textAlign = "center";
   context.shadowColor = "rgba(45,45,255,1)";
-  context.shadowBlur = window.innerWidth < 600 ? 2 : 8; // lighter shadow for mobile
+  context.shadowBlur = 8;
 
-  // Sequence text animation faster for mobile
-  var step = window.innerWidth < 600 ? 0.03 : 0.01; // faster fade for mobile
-
-  if (frameNumber < 500) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
-    context.fillText("everyday I cannot believe how lucky I am", canvas.width / 2, canvas.height / 2);
-    opacity += step;
-  } else if (frameNumber >= 500 && frameNumber < 1000) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
-    context.fillText("everyday I cannot believe how lucky I am", canvas.width / 2, canvas.height / 2);
-    opacity -= step;
-  } else if (frameNumber >= 1000) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
+  // Timeline (time in seconds)
+  if (elapsed < 5) { // 0-5s
+    context.fillStyle = `rgba(45,45,255,${elapsed/5})`;
+    context.fillText("everyday I cannot believe how lucky I am", canvas.width/2, canvas.height/2);
+  } else if (elapsed < 10) { // 5-10s fade out
+    context.fillStyle = `rgba(45,45,255,${1-(elapsed-5)/5})`;
+    context.fillText("everyday I cannot believe how lucky I am", canvas.width/2, canvas.height/2);
+  } else if (elapsed < 15) { // 10-15s
+    drawTextWithLineBreaks(["amongst trillions of stars,", "over billions of years"], canvas.width/2, canvas.height/2, fontSize, lineHeight, (elapsed-10)/5);
+  } else if (elapsed < 20) { // 15-20s fade out
+    drawTextWithLineBreaks(["amongst trillions of stars,", "over billions of years"], canvas.width/2, canvas.height/2, fontSize, lineHeight, 1-(elapsed-15)/5);
+  } else if (elapsed < 25) { // 20-25s
+    context.fillText("i want to spend this life with you", canvas.width/2, canvas.height/2);
+    context.fillStyle = `rgba(45,45,255,${(elapsed-20)/5})`;
+  } else if (elapsed < 30) {
+    context.fillText("i want to spend this life with you", canvas.width/2, canvas.height/2);
+    context.fillStyle = `rgba(45,45,255,${1-(elapsed-25)/5})`;
+  } else if (elapsed < 35) {
+    context.fillText("is so incredibly, unfathomably unlikely", canvas.width/2, canvas.height/2);
+    context.fillStyle = `rgba(45,45,255,${(elapsed-30)/5})`;
+  } else if (elapsed < 40) {
+    context.fillText("is so incredibly, unfathomably unlikely", canvas.width/2, canvas.height/2);
+    context.fillStyle = `rgba(45,45,255,${1-(elapsed-35)/5})`;
+  } else if (elapsed >= 40) {
     drawTextWithLineBreaks(
-      [
-        "I love you so much Nikitha,",
-        "more than all time and space can contain"
-      ],
-      canvas.width / 2,
-      canvas.height / 2,
-      fontSize,
-      lineHeight
+      ["I love you so much Nikitha,", "more than all time and space can contain"],
+      canvas.width/2, canvas.height/2, fontSize, lineHeight, Math.min((elapsed-40)/5,1)
     );
-    opacity = Math.min(opacity + step, 1);
-
-    // Show button after main message
-    context.fillStyle = `rgba(45,45,255,${secondOpacity})`;
-    context.fillText("Happy Valentine’s Day ❤️", canvas.width / 2, canvas.height / 2 + 80);
-    secondOpacity = Math.min(secondOpacity + step, 1);
-    button.style.display = "block";
+    if(elapsed >= 50){ // show button after 50s
+      button.style.display = "block";
+    }
   }
 
   context.shadowBlur = 0;
-}
-
-// Main draw loop
-function draw() {
-  context.clearRect(0, 0, canvas.width, canvas.height); // faster than putImageData
-  drawStars();
-  updateStars();
-  drawText();
-  frameNumber++;
   requestAnimationFrame(draw);
 }
 
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
 requestAnimationFrame(draw);
+</script>
