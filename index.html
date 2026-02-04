@@ -98,7 +98,9 @@
       drawStars();
       updateStars();
 
-      const fontSize = window.innerWidth < 600 ? 22 : Math.min(30, window.innerWidth / 24);
+      const fontSize = window.innerWidth < 600 
+  ? Math.max(28, window.innerWidth / 12) 
+  : Math.min(40, window.innerWidth / 20);
       const lineHeight = 8;
       context.font = fontSize + "px Comic Sans MS";
       context.textAlign = "center";
