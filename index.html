@@ -1,16 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:image" content="https://raw.githubusercontent.com/sojijr/valentine-website/main/public/images/favicon.png">
-    <link rel="icon" href="public/images/favicon.png" type="image/x-icon" />  
-    <title>Happy Valentine's Day</title>
-    <link rel="stylesheet" href="public/style.css">
-  </head>
-  <body>
-    <canvas id="starfield"></canvas>
-    <button id="valentinesButton">Click Me! ❤</button>
-    <script src="script.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Valentine Starfield</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      height: 100%;
+      width: 100%;
+    }
+    canvas {
+      display: block;
+    }
+    #valentinesButton {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      font-size: 18px;
+      background: #2d2dff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+  <button id="valentinesButton">Next</button>
+
+  <script>
+    const canvas = document.getElementById("starfield");
+    const context = canvas.getContext("2d");
+
+    let stars = window.innerWidth < 600 ? 200 : 500;
+    let colorrange = [0, 60, 240];
+    let starArray = [];
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function getRandom(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Initialize stars
+    for (let i = 0; i < stars; i++) {
+      let x = Math.random() * canvas.width;
+      let y = Math.random() * canvas.height;
+      let radius = Math.random() * 1.2;
+      let hue = colorrange[getRandom(0, colorrange.length - 1)];
+      let sat = getRandom(50, 100);
+      let opacity = Math.random();
+      starArray.push({ x, y, radius, hue, sat, opacity });
+    }
+
+    const button = document.getElementById("valentinesButton");
+    button.addEventListener("click", () => {
+      window.location.href = "valentinesday.html";
+    });
+
+    let startTime = null;
+
+    function drawStars() {
+      starArray.forEach(star => {
+        context.beginPath();
+        context.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        context.fillStyle = `hsla(${star.hue}, ${star.sat}%, 88%, ${star.opacity})`;
+        context.fill();
+      });
+    }
+
+    function updateStars() {
+      starArray.forEach(star => {
+        if (Math.random() > 0.99) star.opacity = Math.random();
+      });
+    }
+
+    function drawTextWithLineBreaks(lines, x, y, fontSize, lineHeight, opacity) {
+      context.fillStyle = `rgba(45,45,255,${opacity})`;
+      lines.forEach((line, index) => {
+        context.fillText(line, x, y + index * (fontSize + lineHeight));
+      });
+    }
+
+    function draw(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const elapsed = (timestamp - startTime) / 1000;
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      drawStars();
+      updateStars();
+
+      const fontSize = window.innerWidth < 600 ? 22 : Math.min(30, window.innerWidth / 24);
+      const lineHeight = 8;
+      context.font = fontSize + "px Comic Sans MS";
+      context.textAlign = "center";
+      context.shadowColor = "rgba(45,45,255,1)";
+      context.shadowBlur = 8;
+
+      // 3 second fade duration
+      const fadeDuration = 3;
+
+      if (elapsed < fadeDuration) {
+        context.fillStyle = `rgba(45,45,255,${elapsed/fadeDuration})`;
+        context.fillText("everyday I cannot believe how lucky I am", canvas.width/2, canvas.height/2);
+      } else if (elapsed < fadeDuration*2) {
+        context.fillStyle = `rgba(45,45,255,${1-(elapsed-fadeDuration)/fadeDuration})`;
+        context.fillText("everyday I cannot believe how lucky I am", canvas.width/2, canvas.height/2);
+      } else if (elapsed < fadeDuration*3) {
+        drawTextWithLineBreaks(["amongst trillions of stars,", "over billions of years"], canvas.width/2, canvas.height/2, fontSize, lineHeight, (elapsed-fadeDuration*2)/fadeDuration);
+      } else if (elapsed < fadeDuration*4) {
+        drawTextWithLineBreaks(["amongst trillions of stars,", "over billions of years"], canvas.width/2, canvas.height/2, fontSize, lineHeight, 1-(elapsed-fadeDuration*3)/fadeDuration);
+      } else if (elapsed < fadeDuration*5) {
+        context.fillStyle = `rgba(45,45,255,${(elapsed-fadeDuration*4)/fadeDuration})`;
+        context.fillText("i want to spend this life with you", canvas.width/2, canvas.height/2);
+      } else if (elapsed < fadeDuration*6) {
+        context.fillStyle = `rgba(45,45,255,${1-(elapsed-fadeDuration*5)/fadeDuration})`;
+        context.fillText("i want to spend this life with you", canvas.width/2, canvas.height/2);
+      } else if (elapsed < fadeDuration*7) {
+        context.fillStyle = `rgba(45,45,255,${(elapsed-fadeDuration*6)/fadeDuration})`;
+        context.fillText("is so incredibly, unfathomably unlikely", canvas.width/2, canvas.height/2);
+      } else if (elapsed < fadeDuration*8) {
+        context.fillStyle = `rgba(45,45,255,${1-(elapsed-fadeDuration*7)/fadeDuration})`;
+        context.fillText("is so incredibly, unfathomably unlikely", canvas.width/2, canvas.height/2);
+      } else if (elapsed >= fadeDuration*8) {
+        drawTextWithLineBreaks(
+          ["I love you so much Nikitha,", "more than all time and space can contain"],
+          canvas.width/2, canvas.height/2, fontSize, lineHeight, Math.min((elapsed-fadeDuration*8)/fadeDuration,1)
+        );
+        if(elapsed >= fadeDuration*10){
+          button.style.display = "block";
+        }
+      }
+
+      context.shadowBlur = 0;
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    requestAnimationFrame(draw);
+  </script>
+</body>
 </html>
