@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>For You, Nikitha ❤️</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: url("./public/images/image.png") no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* Dark overlay for text readability */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.55);
+      z-index: 0;
+    }
+
+    /* Content container */
+    .content {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 6vw, 3rem);
+      margin-bottom: 1rem;
+      color: #ffb6c1;
+      text-shadow: 0 0 8px rgba(255,182,193,0.8);
+    }
+
+    .poem {
+      white-space: pre-line;
+      font-size: clamp(1rem, 4vw, 1.25rem);
+      line-height: 1.6;
+      max-width: 90vw;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 6px rgba(0,0,0,0.7);
+    }
+
+    footer {
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      opacity: 0.8;
+      font-style: italic;
+    }
+
+    /* Responsive padding for smaller devices */
+    @media (max-width: 400px) {
+      .content {
+        padding: 1rem 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="overlay"></div>
+
+  <div class="content">
+    <h1>For You, Nikitha ❤️</h1>
+
+    <div class="poem">
+I know we haven’t spoken for a month,
+and every day without you
+has felt heavier than the last.
+
+I won’t pretend I’m okay —
+I miss you in the quiet,
+I miss you in the noise,
+I miss you in ways words never learned to explain.
+
+If I hurt you, I’m sorry.
+If I failed you, I own it.
+But my love for you never left —
+it stayed, even when you were gone.
+
+Every tear I cried was your name.
+Every prayer I whispered was for us.
+
+I don’t want perfection.
+I don’t want to win.
+I just want one last chance
+to protect you, choose you,
+and love you better than before.
+
+If you allow it,
+I want to spend this Valentine’s Day
+not proving anything —
+just loving you, honestly,
+for the rest of my life.
+    </div>
+
+    <footer>Always yours.</footer>
+  </div>
+
+</body>
+</html>
