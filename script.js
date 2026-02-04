@@ -1,11 +1,17 @@
-
-
+// Get canvas
 var canvas = document.getElementById("starfield");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
 var context = canvas.getContext("2d");
-var stars = 500;
+
+// Resize canvas
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+// Starfield setup
+var stars = window.innerWidth < 600 ? 150 : 500; // fewer stars on mobile
 var colorrange = [0, 60, 240];
 var starArray = [];
 
@@ -15,22 +21,27 @@ function getRandom(min, max) {
 
 // Initialize stars
 for (var i = 0; i < stars; i++) {
-  var x = Math.random() * canvas.width;
-  var y = Math.random() * canvas.height;
-  var radius = Math.random() * 1.2;
-  var hue = colorrange[getRandom(0, colorrange.length - 1)];
-  var sat = getRandom(50, 100);
-  var opacity = Math.random();
-  starArray.push({ x, y, radius, hue, sat, opacity });
+  starArray.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    radius: Math.random() * 1.2,
+    hue: colorrange[getRandom(0, colorrange.length - 1)],
+    sat: getRandom(50, 100),
+    opacity: Math.random()
+  });
 }
 
+// Animation variables
 var frameNumber = 0;
 var opacity = 0;
 var secondOpacity = 0;
-var thirdOpacity = 0;
 
-var baseFrame = context.getImageData(0, 0, canvas.width, canvas.height);
+const button = document.getElementById("valentinesButton");
+button.addEventListener("click", () => {
+  window.location.href = "valentinesday.html";
+});
 
+// Draw stars
 function drawStars() {
   for (var i = 0; i < stars; i++) {
     var star = starArray[i];
@@ -41,6 +52,7 @@ function drawStars() {
   }
 }
 
+// Update stars
 function updateStars() {
   for (var i = 0; i < stars; i++) {
     if (Math.random() > 0.99) {
@@ -49,122 +61,34 @@ function updateStars() {
   }
 }
 
-const button = document.getElementById("valentinesButton");
-
-// 👉 REDIRECT TO NEXT PAGE
-button.addEventListener("click", () => {
-  window.location.href = "valentinesday.html";
-});
-
+// Draw text with line breaks
 function drawTextWithLineBreaks(lines, x, y, fontSize, lineHeight) {
   lines.forEach((line, index) => {
     context.fillText(line, x, y + index * (fontSize + lineHeight));
   });
 }
 
+// Draw animated text
 function drawText() {
   var fontSize = Math.min(30, window.innerWidth / 24);
   var lineHeight = 8;
-
   context.font = fontSize + "px Comic Sans MS";
   context.textAlign = "center";
+  context.shadowColor = "rgba(45,45,255,1)";
+  context.shadowBlur = window.innerWidth < 600 ? 2 : 8; // lighter shadow for mobile
 
-  context.shadowColor = "rgba(45, 45, 255, 1)";
-  context.shadowBlur = 8;
+  // Sequence text animation faster for mobile
+  var step = window.innerWidth < 600 ? 0.03 : 0.01; // faster fade for mobile
 
-  if (frameNumber < 250) {
+  if (frameNumber < 500) {
     context.fillStyle = `rgba(45,45,255,${opacity})`;
-    context.fillText(
-      "everyday I cannot believe how lucky I am",
-      canvas.width / 2,
-      canvas.height / 2
-    );
-    opacity += 0.01;
-  }
-
-  if (frameNumber >= 250 && frameNumber < 500) {
+    context.fillText("everyday I cannot believe how lucky I am", canvas.width / 2, canvas.height / 2);
+    opacity += step;
+  } else if (frameNumber >= 500 && frameNumber < 1000) {
     context.fillStyle = `rgba(45,45,255,${opacity})`;
-    context.fillText(
-      "everyday I cannot believe how lucky I am",
-      canvas.width / 2,
-      canvas.height / 2
-    );
-    opacity -= 0.01;
-  }
-
-  if (frameNumber === 500) opacity = 0;
-
-  if (frameNumber > 500 && frameNumber < 750) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
-    drawTextWithLineBreaks(
-      ["amongst trillions of stars,", "over billions of years"],
-      canvas.width / 2,
-      canvas.height / 2,
-      fontSize,
-      lineHeight
-    );
-    opacity += 0.01;
-  }
-
-  if (frameNumber >= 750 && frameNumber < 1000) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
-    drawTextWithLineBreaks(
-      ["amongst trillions of stars,", "over billions of years"],
-      canvas.width / 2,
-      canvas.height / 2,
-      fontSize,
-      lineHeight
-    );
-    opacity -= 0.01;
-  }
-
-  if (frameNumber === 1000) opacity = 0;
-
-  if (frameNumber > 1000 && frameNumber < 1250) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
-    context.fillText(
-      "to be alive, and to get to spend this life with you",
-      canvas.width / 2,
-      canvas.height / 2
-    );
-    opacity += 0.01;
-  }
-
-  if (frameNumber >= 1250 && frameNumber < 1500) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
-    context.fillText(
-      "to be alive, and to get to spend this life with you",
-      canvas.width / 2,
-      canvas.height / 2
-    );
-    opacity -= 0.01;
-  }
-
-  if (frameNumber === 1500) opacity = 0;
-
-  if (frameNumber > 1500 && frameNumber < 1750) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
-    context.fillText(
-      "is so incredibly, unfathomably unlikely",
-      canvas.width / 2,
-      canvas.height / 2
-    );
-    opacity += 0.01;
-  }
-
-  if (frameNumber >= 1750 && frameNumber < 2000) {
-    context.fillStyle = `rgba(45,45,255,${opacity})`;
-    context.fillText(
-      "is so incredibly, unfathomably unlikely",
-      canvas.width / 2,
-      canvas.height / 2
-    );
-    opacity -= 0.01;
-  }
-
-  if (frameNumber === 2000) opacity = 0;
-
-  if (frameNumber > 2000) {
+    context.fillText("everyday I cannot believe how lucky I am", canvas.width / 2, canvas.height / 2);
+    opacity -= step;
+  } else if (frameNumber >= 1000) {
     context.fillStyle = `rgba(45,45,255,${opacity})`;
     drawTextWithLineBreaks(
       [
@@ -176,37 +100,26 @@ function drawText() {
       fontSize,
       lineHeight
     );
-    opacity += 0.01;
-  }
+    opacity = Math.min(opacity + step, 1);
 
-  if (frameNumber >= 2750) {
+    // Show button after main message
     context.fillStyle = `rgba(45,45,255,${secondOpacity})`;
-    context.fillText(
-      "Happy Valentine’s Day ❤️",
-      canvas.width / 2,
-      canvas.height / 2 + 80
-    );
-    secondOpacity += 0.01;
-
+    context.fillText("Happy Valentine’s Day ❤️", canvas.width / 2, canvas.height / 2 + 80);
+    secondOpacity = Math.min(secondOpacity + step, 1);
     button.style.display = "block";
   }
 
   context.shadowBlur = 0;
 }
 
+// Main draw loop
 function draw() {
-  context.putImageData(baseFrame, 0, 0);
+  context.clearRect(0, 0, canvas.width, canvas.height); // faster than putImageData
   drawStars();
   updateStars();
   drawText();
   frameNumber++;
   requestAnimationFrame(draw);
 }
-
-window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  baseFrame = context.getImageData(0, 0, canvas.width, canvas.height);
-});
 
 requestAnimationFrame(draw);
