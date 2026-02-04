@@ -64,42 +64,46 @@ function draw(timestamp) {
   drawStars();
   updateStars();
 
-  const fontSize = Math.min(30, window.innerWidth / 24);
+  // Larger font on mobile
+  const fontSize = window.innerWidth < 600 ? 22 : Math.min(30, window.innerWidth / 24);
   const lineHeight = 8;
   context.font = fontSize + "px Comic Sans MS";
   context.textAlign = "center";
   context.shadowColor = "rgba(45,45,255,1)";
   context.shadowBlur = 8;
 
-  // Timeline (time in seconds)
-  if (elapsed < 5) { // 0-5s
-    context.fillStyle = `rgba(45,45,255,${elapsed/5})`;
+  // Faster fade on mobile
+  const fadeDuration = window.innerWidth < 600 ? 3 : 5;
+
+  // Timeline
+  if (elapsed < fadeDuration) {
+    context.fillStyle = `rgba(45,45,255,${elapsed/fadeDuration})`;
     context.fillText("everyday I cannot believe how lucky I am", canvas.width/2, canvas.height/2);
-  } else if (elapsed < 10) { // 5-10s fade out
-    context.fillStyle = `rgba(45,45,255,${1-(elapsed-5)/5})`;
+  } else if (elapsed < fadeDuration*2) {
+    context.fillStyle = `rgba(45,45,255,${1-(elapsed-fadeDuration)/fadeDuration})`;
     context.fillText("everyday I cannot believe how lucky I am", canvas.width/2, canvas.height/2);
-  } else if (elapsed < 15) { // 10-15s
-    drawTextWithLineBreaks(["amongst trillions of stars,", "over billions of years"], canvas.width/2, canvas.height/2, fontSize, lineHeight, (elapsed-10)/5);
-  } else if (elapsed < 20) { // 15-20s fade out
-    drawTextWithLineBreaks(["amongst trillions of stars,", "over billions of years"], canvas.width/2, canvas.height/2, fontSize, lineHeight, 1-(elapsed-15)/5);
-  } else if (elapsed < 25) { // 20-25s
+  } else if (elapsed < fadeDuration*3) {
+    drawTextWithLineBreaks(["amongst trillions of stars,", "over billions of years"], canvas.width/2, canvas.height/2, fontSize, lineHeight, (elapsed-fadeDuration*2)/fadeDuration);
+  } else if (elapsed < fadeDuration*4) {
+    drawTextWithLineBreaks(["amongst trillions of stars,", "over billions of years"], canvas.width/2, canvas.height/2, fontSize, lineHeight, 1-(elapsed-fadeDuration*3)/fadeDuration);
+  } else if (elapsed < fadeDuration*5) {
+    context.fillStyle = `rgba(45,45,255,${(elapsed-fadeDuration*4)/fadeDuration})`;
     context.fillText("i want to spend this life with you", canvas.width/2, canvas.height/2);
-    context.fillStyle = `rgba(45,45,255,${(elapsed-20)/5})`;
-  } else if (elapsed < 30) {
+  } else if (elapsed < fadeDuration*6) {
+    context.fillStyle = `rgba(45,45,255,${1-(elapsed-fadeDuration*5)/fadeDuration})`;
     context.fillText("i want to spend this life with you", canvas.width/2, canvas.height/2);
-    context.fillStyle = `rgba(45,45,255,${1-(elapsed-25)/5})`;
-  } else if (elapsed < 35) {
+  } else if (elapsed < fadeDuration*7) {
+    context.fillStyle = `rgba(45,45,255,${(elapsed-fadeDuration*6)/fadeDuration})`;
     context.fillText("is so incredibly, unfathomably unlikely", canvas.width/2, canvas.height/2);
-    context.fillStyle = `rgba(45,45,255,${(elapsed-30)/5})`;
-  } else if (elapsed < 40) {
+  } else if (elapsed < fadeDuration*8) {
+    context.fillStyle = `rgba(45,45,255,${1-(elapsed-fadeDuration*7)/fadeDuration})`;
     context.fillText("is so incredibly, unfathomably unlikely", canvas.width/2, canvas.height/2);
-    context.fillStyle = `rgba(45,45,255,${1-(elapsed-35)/5})`;
-  } else if (elapsed >= 40) {
+  } else if (elapsed >= fadeDuration*8) {
     drawTextWithLineBreaks(
       ["I love you so much Nikitha,", "more than all time and space can contain"],
-      canvas.width/2, canvas.height/2, fontSize, lineHeight, Math.min((elapsed-40)/5,1)
+      canvas.width/2, canvas.height/2, fontSize, lineHeight, Math.min((elapsed-fadeDuration*8)/fadeDuration,1)
     );
-    if(elapsed >= 50){ // show button after 50s
+    if(elapsed >= fadeDuration*10){ // show button later
       button.style.display = "block";
     }
   }
